@@ -1,4 +1,4 @@
-from torchvision.datasets import VisionDataset
+from torchvision.datasets import VisionDataset, CIFAR100
 from torchvision import transforms
 import numpy as np
 
