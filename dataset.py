@@ -23,11 +23,11 @@ class cifar100(VisionDataset):
         def __len__(self):
           return len(self.dataset)
           
-       def __getitem__(self,index):
-        image, label = self.dataset[index]
-        return image, label
+        def __getitem__(self,index):
+          image, label = self.dataset[index]
+          return image, label
         
-       def __getGroup__(self,index):
-        return self.groups[index]
+        def __getGroup__(self,index):
+          return self.groups[index]
         
         
