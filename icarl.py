@@ -14,31 +14,63 @@ class iCaRL():
     self.n_classes=n_classes
     self.device=device
   
-  def constructExemplar(self, data, net, current_n_class): #Per una classe set di exemplars
-    m=(self.k)/current_n_class
+  
+  def Classifier(self, data
+  
+  
+  
+  def constructExemplar(self, data, net, current_class): #Per una classe set di exemplars
+    m=(self.k)/current_class
     
-    exemplars=[]
-    feature=[]
-    mean = torch.zeros((1,64), device=self.device) 
+    items=dict((idx,[]) for idx in range(current_class-10,current_class))
+    exemplars=dict((idx,[]) for idx in range(current_class-10,current_class))
     
-    net.train(False)
-    for img, _ in data:
-      img.to(self.device)
+    for img in data:
+      for idx in items:
+        if img[1] == idx:
+          items[idx].append(img)
+    
+    
+    for label in items:           #For each class
+      data_loader = get_dataloader(items[label])    #Dataloader
+      features=[]
+      mean = torch.zeros((1,64), device=self.device)  #mean=0
+    
+      net.train(False)
+      for img, _ in data_loader:    
+        img.to(self.device)
       
-      features = net(img,feature=True)
-      feature.append(features)
-      mean += features
-    mean = (mean/len(data))
-    mean = mean/mean.norm()
+        feature = net(img,feature=True)      #Extract feature
+        features.append(feature)
+        mean += feature
+      mean = (mean/len(features))
+      mean = mean/mean.norm()
         
-    sigm = nn.Sigmoid()
-    for x in feature:
-      outputs.append(sigm(feature))
+      sigm = nn.Sigmoid()
+   
+      outputs=[]
+      for i in range(m):
+        minimum=10000
+        summ = sum(outputs)
+        for index,instance in enumerate(features):
+          ph = (instance + summ)/(i+1)
+          ph = ph/ph.norm()
+          
+          if torch.dist(ph,mean)<minimum:
+            minimum=torch.dist(ph,mean)
+            min_index=index
+        outputs.append(sigm(instance))
+        exemplars[label].append(items[label][min_index])
+    
+    return exemplars
+  
+  
+  
+   
       
-    for i in range(m):
-      minimum=10000
-      summ = sum(outputs)
-      exemplar = mean - 1/i *(feature[i] + 
+      
+      
+      
       
       
       
