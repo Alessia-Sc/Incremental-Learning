@@ -13,9 +13,13 @@ class iCaRL():
     self.k=k
     self.n_classes=n_classes
     self.device=device
+    
+    
+  def Increm_train(self, net, device, exemplars, parameters):
+    
   
   
-  def Classifier(self, data, exemplars, net, current_class, classifier):
+  def NCM_Classifier(self, data, exemplars, net, current_class, classifier):
     net.train(False)
     
     preds=dict((k, []) for k in range(current_class-10,current_class))
@@ -70,12 +74,13 @@ class iCaRL():
       mean = torch.zeros((1,64), device=self.device)  #mean=0
     
       net.train(False)
-      for img, _ in data_loader:    
-        img.to(self.device)
+      for img, _ in data_loader:  
+        with torch.no_grad():
+          img.to(self.device)
       
-        feature = net(img,features=True)      #Extract feature
-        features.append(feature)
-        mean += feature
+          feature = net(img,features=True)      #Extract feature
+          features.append(feature)
+          mean += feature
       mean = (mean/len(features))
       mean = mean/mean.norm()
    
